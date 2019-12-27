@@ -5,9 +5,7 @@
 using namespace std;
 
 // Creates an empty binary tree
-binary_tree::binary_tree()
-{
-}
+binary_tree::binary_tree(){}
 
 // Creates a binary tree with an initial value to store
 binary_tree::binary_tree(int value)
@@ -32,20 +30,22 @@ binary_tree::binary_tree(const vector<int> &values)
 
 void private_copy(struct node *&new_tree, struct node *old_tree)
 {
-		if(old_tree != nullptr)
-		{
-			// New node
-			new_tree = new node;
-			// New tree's data is the existing tree's data
-			new_tree->data = old_tree->data;
-			new_tree->left = nullptr;
-			new_tree->right = nullptr;
-			
-			// New tree's left branch is existing tree's
-			private_copy(new_tree->left, old_tree->left);
-			// New tree's left branch is existing tree's
-			private_copy(new_tree->right, old_tree->right);
-		}
+	if(old_tree != nullptr)
+	{
+		// New node
+		new_tree = new node;
+		
+		// New tree's data is the existing tree's data
+		new_tree->data = old_tree->data;
+		new_tree->left = nullptr;
+		new_tree->right = nullptr;
+		
+		// New tree's left branch is existing tree's left branch
+		private_copy(new_tree->left, old_tree->left);
+		
+		// New tree's right branch is existing tree's right branch
+		private_copy(new_tree->right, old_tree->right);
+	}
 }
 
 // Creates a binary tree by copying an existing tree
@@ -54,19 +54,20 @@ binary_tree::binary_tree(const binary_tree &rhs)
 	private_copy(tree, rhs.tree);
 }
 
-
 void delete_tree(node *tree)
 {
 	// If tree is equal to nullptr
 	if (tree == nullptr)
 		return;
+
 	// Delete left branch
 	delete_tree(tree->left);
+
 	// Delete right branch
 	delete_tree(tree->right);
 }
 
- // Destroys (cleans up) the tree
+// Destroys (cleans up) the tree
 binary_tree::~binary_tree()
 {
 	delete_tree(tree);
@@ -79,8 +80,10 @@ void private_insert(node **tree, int value)
 	{
 		// Create new node
 		*tree = new node;
+
 		// Set new value
 		(*tree)->data = value;
+
 		// Set branches to nullptr
 		(*tree)->left = nullptr;
 		(*tree)->right = nullptr;
@@ -109,6 +112,7 @@ void binary_tree::insert(int value)
 node* find_parent(node* tree) 
 {
     static node* parent;
+
 	// If the tree is empty, return the parent node
     if(tree == nullptr) 
 	{
@@ -126,11 +130,13 @@ node* private_remove(node* tree, int value)
 {
 	// New node to store values
 	node* storeNode;
+
 	// If the tree is empty, return null
 	if(tree == nullptr)
 	{
 		return NULL;
 	}
+
 	// If the current node has a value
 	if(tree->data == value) 
 	{
@@ -149,8 +155,10 @@ node* private_remove(node* tree, int value)
 			{
 				// Left child is stored
                 storeNode = tree->left;
+
 				// Delete the tree
                 delete(tree);
+
 				// Return the left child
                 return storeNode;
             }
@@ -158,8 +166,10 @@ node* private_remove(node* tree, int value)
 			{
 				// Right child is stored
                 storeNode = tree->right;
+
 				// Delete the tree
                 delete(tree);
+
 				// Return the right child
                 return storeNode;
             }
@@ -168,10 +178,13 @@ node* private_remove(node* tree, int value)
 		{
 			// Store the left child of the parent
             storeNode = find_parent(tree->left);
+
 			// Tree's value becomes the storeNode's value
             tree->data = storeNode->data;
+
 			// Left child is removed
             tree->left = private_remove(tree->left, tree->data);
+
             return tree;
         }
     }
@@ -190,13 +203,11 @@ node* private_remove(node* tree, int value)
     return tree;
 }
 
-
 // Removes a value from the tree
 void binary_tree::remove(int value)
 {
 	private_remove(tree, value);
 }
-
 
 bool private_exists(node* tree, int value)
 {
@@ -208,6 +219,7 @@ bool private_exists(node* tree, int value)
 		{
 			return true;
 		}
+
 		// If data is lesser than value
 		if (tree->data < value)
 		{
@@ -224,6 +236,7 @@ bool private_exists(node* tree, int value)
 			}
 		}
 	}
+
 	return false;
 }
 
@@ -233,21 +246,23 @@ bool binary_tree::exists(int value) const
 	return private_exists(tree, value);
 }
 
-
-
 string private_inorder(node* tree) 
 {
 	if (tree != nullptr)
 	{
 		// Recursion - left branch
 		string leftBranch = private_inorder(tree->left);
+
 		// Print value
 		string str = to_string(tree->data) + " ";
+
 		// Recursion - right branch
 		string rightBranch = private_inorder(tree->right);
+
 		// Return the left branch, value and right branch
 		return leftBranch + str + rightBranch;
 	}
+
     return string("");
 }
 
@@ -257,12 +272,15 @@ string binary_tree::inorder() const
 		// Create string buffer to store the values
 		string strBuff = "";
 		strBuff = private_inorder(tree);
+
 		// Trim the last space
 		size_t endpos = strBuff.find_last_not_of(" \t");
+
 		if(string::npos != endpos)
 		{
 			strBuff = strBuff.substr(0, endpos + 1);
 		}
+
 		return strBuff;
 }
 
@@ -272,13 +290,17 @@ string private_preorder(node* tree)
 	{
 		// Print value - current node
 		string str = to_string(tree->data) + " ";
+
 		// Recursion - left branch
 		string leftBranch = private_preorder(tree->left);
+
 		// Recursion - right branch
 		string rightBranch = private_preorder(tree->right);
+
 		// Return value, left branch and right branch
 		return str + leftBranch + rightBranch;
 	}
+
     return string("");
 }
 
@@ -286,48 +308,57 @@ string private_preorder(node* tree)
 string binary_tree::preorder() const
 {
     // Create string buffer to store the values
-		string preBuff = "";
-		preBuff = private_preorder(tree);
-		// Trim the last space
-		size_t endpos = preBuff.find_last_not_of(" \t");
-		if(string::npos != endpos)
-		{
-			preBuff = preBuff.substr(0, endpos + 1);
-		}
-		return preBuff;
+	string preBuff = "";
+	preBuff = private_preorder(tree);
+
+	// Trim the last space
+	size_t endpos = preBuff.find_last_not_of(" \t");
+
+	if(string::npos != endpos)
+	{
+		preBuff = preBuff.substr(0, endpos + 1);
+	}
+
+	return preBuff;
 }
 
 // Prints the tree in post-order
 string private_postorder(node* tree)
 {
-	 if (tree != nullptr)
+	if (tree != nullptr)
 	{
-		//Load in string
-		
 		// Recursion - left branch
 		string leftBranch = private_postorder(tree->left);
+
 		// Recursion - right branch
 		string rightBranch = private_postorder(tree->right);
+
 		// Print value - current node
 		string str = to_string(tree->data) + " ";
+
 		// Return left branch, right branch and value
 		return leftBranch + rightBranch + str;
 	}
+
     return string("");
 }
+
 // Prints the tree in post-order
 string binary_tree::postorder() const
 {
     // Create string buffer to store the values
-		string postBuff = "";
-		postBuff = private_postorder(tree);
-		// Trim the last space
-		size_t endpos = postBuff.find_last_not_of(" \t");
-		if(string::npos != endpos)
-		{
-			postBuff = postBuff.substr(0, endpos + 1);
-		}
-		return postBuff;
+	string postBuff = "";
+	postBuff = private_postorder(tree);
+
+	// Trim the last space
+	size_t endpos = postBuff.find_last_not_of(" \t");
+
+	if(string::npos != endpos)
+	{
+		postBuff = postBuff.substr(0, endpos + 1);
+	}
+
+	return postBuff;
 }
 
 // Copy assignment operator
